@@ -5,7 +5,7 @@ import java.awt.Font;
 
 public final class Const {
     // World-related constants
-    final static double		TARGET_FPS = 50;
+    final static double		TARGET_FPS = 53;
     final static double		FRAME_INCREMENT = 1000 / TARGET_FPS;
     final static String		APP_NAME = "Geometry Ball Tournament 2014";
     final static int            DISPLAY_WIDTH = 1024;
@@ -16,7 +16,7 @@ public final class Const {
     final static Color	        BG_COLOR = Color.BLACK;
     final static int		FONT_SIZE = 24;
     
-    final static boolean	SHOW_FPS = false;
+    final static boolean	SHOW_FPS = true;
     final static Color          FPS_TEXT_COLOR = Color.RED;
     final static Vector2D	FPS_TEXT_POSITION = new Vector2D(0.0, 0.0);
     

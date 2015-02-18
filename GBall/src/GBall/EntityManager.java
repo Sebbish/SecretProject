@@ -2,11 +2,25 @@ package GBall;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.Socket;
+import java.net.SocketException;
+import java.nio.ByteBuffer;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
+import Msg.MsgData;
+
 public class EntityManager {
     private static LinkedList<GameEntity> m_entities = new LinkedList<GameEntity>();
+    
+    DatagramSocket m_socket;
+    public static final int SERVERPORT = 4444;
+    
     private static class SingletonHolder { 
         public static final EntityManager instance = new EntityManager();
     }
@@ -16,15 +30,110 @@ public class EntityManager {
     }
 
     private EntityManager() {
+    	try {
+			m_socket = new DatagramSocket(SERVERPORT);
+		} catch (SocketException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
     
     public void addShip(final Vector2D position, final Vector2D speed, final Vector2D direction, final Color color, final KeyConfig kc) {
-    	m_entities.add(new Ship(position, speed, direction, color, kc));
+    	m_entities.add(new Ship(position, speed, direction, color));
     }
 
     public void addBall(final Vector2D position, final Vector2D speed) {
     	m_entities.add(new Ball(position, speed));	
     }
+    /////////////////////
+    public void allConnected(){
+    	int id = 0;
+    	byte[] b = new byte[16];
+    	DatagramPacket packet = new DatagramPacket(b,b.length);
+    	
+    	try {
+			m_socket.receive(packet);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			//e.printStackTrace();
+		}
+    	int msg = ByteBuffer.wrap(b, 0, packet.getLength()).getInt();
+    	/*for(int i = id; i < id + msg; i++){
+    		if(m_entities.get(i).isUsedByPlayer() && i < 4)
+    			m_entities.get(i).connect(packet.getAddress(), packet.getPort());
+    		byte[] by = new byte[4];
+    		if(id < 4)
+    			by = ByteBuffer.allocate(4).putInt(id).array();
+    		else
+    			by = ByteBuffer.allocate(4).putInt(0).array();
+    		DatagramPacket send = new DatagramPacket(by,by.length);
+    		try {
+    			m_socket.receive(packet);
+    		} catch (IOException e) {
+    			// TODO Auto-generated catch block
+    			//e.printStackTrace();
+    		}
+    		int msg1 = ByteBuffer.wrap(b, 0, packet.getLength()).getInt();
+    		if(msg1 == 0)
+    			id++;
+    		else
+    			i--;
+    	}
+    	id  += msg;*/
+    }
+   
+    public void updateinput(){
+    	byte[] b = new byte[2];
+    	DatagramPacket packet = new DatagramPacket(b,b.length);
+    	
+    	try {
+			m_socket.receive(packet);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			//e.printStackTrace();
+		}
+    	int id = packet.getData()[0];
+    	int msg = packet.getData()[1];
+    	if(id >= 0 && id <= 4){
+    		if(m_entities.get(id).isUsedByPlayer())
+    			m_entities.get(id).setInput(msg);
+    		else
+    			m_entities.get(id).connect(packet.getAddress(), packet.getPort());
+    	}
+    }
+    
+    public void broadcastPosition(){
+    	MsgData msg = new MsgData(
+    			m_entities.get(0).getPosition(),
+    			m_entities.get(1).getPosition(),
+    			m_entities.get(2).getPosition(),
+    			m_entities.get(3).getPosition(),
+    			m_entities.get(0).getDirection(),
+    			m_entities.get(1).getDirection(),
+    			m_entities.get(2).getDirection(),
+    			m_entities.get(3).getDirection(),
+    			m_entities.get(4).getPosition());
+    	
+    	try {
+    	ByteArrayOutputStream baos = new ByteArrayOutputStream();
+  		ObjectOutputStream oos = new ObjectOutputStream(baos);
+  	    oos.writeObject(new MsgData());
+  	    oos.flush();
+  	    byte[] buf = new byte[1024];
+  	    buf = baos.toByteArray();
+  	    for(int i = 0; i < 4; i++){
+  	    	if(m_entities.get(i).getAddress() != null){
+  	    		DatagramPacket pack = new DatagramPacket(buf, buf.length, m_entities.get(i).getAddress(), m_entities.get(i).getPort());
+  	    		m_socket.send(pack);
+  	    	}
+  	    }
+		oos = new ObjectOutputStream(baos);
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+    }
+    ///////////////////////////////
 
     public void updatePositions() {
 		for(ListIterator<GameEntity> itr = m_entities.listIterator(0); itr.hasNext();) {

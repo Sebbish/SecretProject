@@ -10,8 +10,8 @@ import java.net.InetAddress;
 
 public class World {
 
-	public static final String SERVERIP = "127.0.0.1"; // 'Within' the emulator!  
-	public static final int SERVERPORT = 4444; 
+	/*public static final String SERVERIP = "127.0.0.1"; // 'Within' the emulator!  
+	public static final int SERVERPORT = 4444; */
     
 	private static class WorldSingletonHolder { 
         public static final World instance = new World();
@@ -29,14 +29,13 @@ public class World {
 
     private World() {
 	
-	
     }
 
     public void process() {
 	initPlayers();
 	
 	// Marshal the state    
-	try {
+	/*try {
 	    ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		DatagramSocket m_socket = new DatagramSocket();
 		InetAddress m_serverAddress = InetAddress.getByName("localhost");
@@ -55,15 +54,17 @@ public class World {
 	} catch (IOException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
-	}
-    
+	}*/
+    //allConnected();
 	
 	while(true) {
+		EntityManager.getInstance().updateinput();
 	    if(newFrame()) {
 		EntityManager.getInstance().updatePositions();
 		EntityManager.getInstance().checkBorderCollisions(Const.DISPLAY_WIDTH, Const.DISPLAY_HEIGHT);
 		EntityManager.getInstance().checkShipCollisions();
 		m_gameWindow.repaint();
+		EntityManager.getInstance().broadcastPosition();
 	    }
 	}
     }

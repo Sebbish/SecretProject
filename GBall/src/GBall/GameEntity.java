@@ -1,6 +1,8 @@
 package GBall;
 
 import java.io.Serializable;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 
 public abstract class GameEntity implements Serializable{
     /**
@@ -22,6 +24,30 @@ public abstract class GameEntity implements Serializable{
     public abstract void render(java.awt.Graphics g);
     public abstract double getRadius();
     public abstract boolean givesPoints();
+    
+    ///////////////////////////
+    public boolean isUsedByPlayer(){
+    	return false;
+    }
+    
+    public boolean connect(InetAddress address, int port){
+    	return false;
+    }
+    
+    public boolean compareAddressAndPort(InetAddress address, int port){
+    	return false;
+    }
+    
+    public void setInput(int input){ }
+    
+    public InetAddress getAddress(){
+    	return null;
+    }
+    
+    public int getPort(){
+    	return 0;
+    }
+    //////////////////////////
     
     public GameEntity(final Vector2D position, final Vector2D speed, final Vector2D direction, double maxAcceleration, double maxSpeed, double friction) {
 	m_position = position;

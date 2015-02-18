@@ -2,22 +2,57 @@ package GBall;
 
 import java.awt.Color;
 import java.awt.event.*;
+import java.net.InetAddress;
 
-public class Ship extends GameEntity implements KeyListener {
+public class Ship extends GameEntity {
 
     private Color m_color;
-    private final KeyConfig m_keyConfig;
     private int rotation = 0; // Set to 1 when rotating clockwise, -1 when rotating counterclockwise
     private boolean braking = false;
-
-    public Ship(final Vector2D position, final Vector2D speed, final Vector2D direction, final Color col, final KeyConfig kc) {
+    /////////////////////
+    private boolean m_isUsedByPlayer = false;
+    private InetAddress m_address;
+    private int m_port;
+    
+    @Override
+    public boolean isUsedByPlayer(){
+    	return m_isUsedByPlayer;
+    }
+    @Override
+    public boolean connect(InetAddress address, int port){
+    	if(!m_isUsedByPlayer){
+    		m_address = address;
+    		m_port = port;
+    		m_isUsedByPlayer = true;
+    		return true;
+    	}
+    	return false;
+    }
+    @Override
+    public boolean compareAddressAndPort(InetAddress address, int port){
+    	if(address == m_address && port == m_port)
+    		return true;
+    	return false;
+    }
+    @Override
+    public void setInput(int input){ 
+    	
+    }
+    @Override
+    public InetAddress getAddress(){
+    	return m_address;
+    }
+    @Override
+    public int getPort(){
+    	return m_port;
+    }
+    /////////////////////
+    public Ship(final Vector2D position, final Vector2D speed, final Vector2D direction, final Color col) {
 	super(position, speed, direction, Const.SHIP_MAX_ACCELERATION, Const.SHIP_MAX_SPEED, Const.SHIP_FRICTION);
 	m_color = col;
-	m_keyConfig = kc;
-	World.getInstance().addKeyListener(this);
     }
 
-    @Override
+   /* @Override
     public void keyPressed(KeyEvent e) {
 	try {
             if(e.getKeyCode() == KeyEvent.VK_ESCAPE) {
@@ -39,6 +74,7 @@ public class Ship extends GameEntity implements KeyListener {
     }
 
     public void keyReleased(KeyEvent e) {
+    	
         try {
 	    if(e.getKeyCode() == m_keyConfig.rightKey() && rotation == 1) {
 		rotation = 0;
@@ -56,7 +92,7 @@ public class Ship extends GameEntity implements KeyListener {
     }
     @Override
     public void keyTyped(KeyEvent e) {} 
-
+*/
     @Override
     public void move() {
 	if(rotation != 0) {
@@ -95,4 +131,5 @@ public class Ship extends GameEntity implements KeyListener {
     public double getRadius() {
 	return Const.SHIP_RADIUS;
     }
+
 }
