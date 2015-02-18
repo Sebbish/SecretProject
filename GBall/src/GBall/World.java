@@ -31,7 +31,7 @@ public class World {
 	
     }
 
-    public void process() {
+    public void process() throws IOException {
 	initPlayers();
 	
 	// Marshal the state    
@@ -56,7 +56,7 @@ public class World {
 		e.printStackTrace();
 	}*/
     //allConnected();
-	
+	EntityManager.getInstance().allConnected();
 	while(true) {
 		EntityManager.getInstance().updateinput();
 	    if(newFrame()) {

@@ -11,7 +11,7 @@ import GBall.World;
 
 public class Main {
 	
-	private DatagramSocket socket;
+	//private static DatagramSocket socket;
 
 	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub
@@ -28,8 +28,8 @@ public class Main {
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		}
-		DatagramSocket socket = null;
-		socket.connect(address, port);
+		DatagramSocket socket = new DatagramSocket();
+		socket.connect(address, 25000);
 		Game.getInstance().process(socket, address, port, players);
 	}
 }
