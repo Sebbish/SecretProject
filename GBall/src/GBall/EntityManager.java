@@ -128,6 +128,7 @@ public class EntityManager {
 		int id = ByteBuffer.wrap(packet.getData(), 0, 4).getInt();
 		int acc = ByteBuffer.wrap(packet.getData(), 4, 4).getInt();
 		int dir = ByteBuffer.wrap(packet.getData(), 8, 4).getInt();
+		System.out.println("ID: " + id + ", ACC: " + acc + ", DIR: " + dir);
 		if (id >= 0 && id <= 3) {
 			if (m_entities.get(id).isUsedByPlayer() && m_entities.get(id).getAddress() == packet.getAddress())
 				m_entities.get(id).setInput(acc, dir);
