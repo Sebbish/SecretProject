@@ -32,9 +32,9 @@ public class Game {
     InetAddress m_address = null;
     int m_port;
     int m_localPlayers;
-    ArrayList<Integer> m_idList;
-    ArrayList<Player> m_entities;
-    ArrayList<KeyClass> m_keys;
+    ArrayList<Integer> m_idList = new ArrayList<Integer>();
+    ArrayList<Player> m_entities = new ArrayList<Player>();
+    ArrayList<KeyClass> m_keys = new ArrayList<KeyClass>();
     
     private double m_lastTime = System.currentTimeMillis();
     
@@ -94,6 +94,7 @@ public class Game {
 	}
     
     boolean handshake() throws IOException {
+    	System.out.println("handshake");
     	byte[] buf = ByteBuffer.allocate(4).putInt(m_localPlayers).array();
     	byte[] acc = ByteBuffer.allocate(4).putInt(0).array();
 		DatagramPacket packet = new DatagramPacket(buf, buf.length, m_address, m_port);
@@ -103,12 +104,18 @@ public class Game {
     			m_idList.remove(i);
     		m_idList.add(sendPacket(packet));
     		
-    		if (m_idList.get(i) == 0)
+    		if (m_idList.get(i) == 0) {
+    			System.out.println("received a zero");
     			return false;
+    		}
     		if (i > 0)
-    			if (m_idList.get(i) == m_idList.get(i-1))
+    			if (m_idList.get(i) == m_idList.get(i-1)) {
+    				System.out.println("received the same ID");
     				i--;
+    			}
     		m_socket.send(a);
+    		
+    		System.out.println("Received ID: " + m_idList.get(i));
     	}
     	return true;
     }
@@ -124,6 +131,7 @@ public class Game {
 				retries++;
 			}	
     	}
+    	System.out.println("Timeout");
     	return 0;
     }
     

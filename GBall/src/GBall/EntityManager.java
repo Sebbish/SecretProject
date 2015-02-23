@@ -40,12 +40,12 @@ public class EntityManager {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		try {
+		/*try {
 			m_socket.setSoTimeout(200);
 		} catch (SocketException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 	}
 
 	public void addShip(final Vector2D position, final Vector2D speed, final Vector2D direction, final Color color, final KeyConfig kc) {
