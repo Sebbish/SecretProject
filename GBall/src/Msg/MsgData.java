@@ -2,8 +2,6 @@ package Msg;
 
 import java.io.Serializable;
 
-import GBall.Vector2D;
-
 public class MsgData implements Serializable {
 
 	/**

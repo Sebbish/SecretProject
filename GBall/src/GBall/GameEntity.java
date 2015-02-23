@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
+import Msg.Vector2D;
+
 public abstract class GameEntity implements Serializable{
     /**
 	 * 

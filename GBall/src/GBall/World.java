@@ -8,6 +8,8 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
+import Msg.Vector2D;
+
 public class World {
 
 	/*public static final String SERVERIP = "127.0.0.1"; // 'Within' the emulator!  

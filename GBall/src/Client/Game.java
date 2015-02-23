@@ -1,6 +1,10 @@
 package Client;
 
+import java.awt.Color;
+import java.awt.event.KeyEvent;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -11,6 +15,9 @@ import java.util.ArrayList;
 import GBall.Const;
 import GBall.EntityManager;
 import GBall.GameWindow;
+import GBall.KeyConfig;
+import Msg.MsgData;
+import Msg.Vector2D;
 
 public class Game {
 	private static class GameSingletonHolder { 
@@ -24,42 +31,83 @@ public class Game {
     DatagramSocket m_socket = null;
     InetAddress m_address = null;
     int m_port;
-    ArrayList<Player> m_players;
+    int m_localPlayers;
+    ArrayList<Integer> m_idList;
+    ArrayList<Player> m_entities;
+    ArrayList<KeyClass> m_keys;
+    
+    private double m_lastTime = System.currentTimeMillis();
     
     private final GameWindow m_gameWindow = new GameWindow();
 
-    public void process(DatagramSocket socket, InetAddress address, int port, ArrayList<Player> players) throws IOException {
+    public void process(DatagramSocket socket, InetAddress address, int port, int players) throws IOException, ClassNotFoundException {
     	m_port = port;
     	m_address = address;
     	m_socket = socket;
-    	m_players = players;
+    	m_localPlayers = players;
     	m_socket.setSoTimeout(200);
     	handshake();
+    	initPlayers();
+    	
     	
     	while(true) {
-    		EntityManager.getInstance().updateinput();
-    	    if(newFrame()) {
-    		EntityManager.getInstance().updatePositions();
-    		EntityManager.getInstance().checkBorderCollisions(Const.DISPLAY_WIDTH, Const.DISPLAY_HEIGHT);
-    		EntityManager.getInstance().checkShipCollisions();
+    		getUpdate();
     		m_gameWindow.repaint();
-    		EntityManager.getInstance().broadcastPosition();
-    	    }
+    		if(newFrame())
+    			sendOutput();
+    	    
     	}
     }
+
+	void getUpdate() throws IOException, ClassNotFoundException {
+		byte[] buf = new byte[256];
+		DatagramPacket packet = new DatagramPacket(buf, buf.length);
+		try {
+			m_socket.receive(packet);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		ByteArrayInputStream bs = new ByteArrayInputStream(packet.getData());
+		ObjectInputStream ois = new ObjectInputStream(bs);
+		MsgData data = (MsgData)ois.readObject();
+		for (int i = 0; i < m_entities.size(); i++) {
+			m_entities.get(i).setPosition(data.getPosition(i+1));
+			m_entities.get(i).setRotation(data.getRotation(i+1));
+		}
+	}
+	
+	void sendOutput() {
+		for (int i = 0; i < m_keys.size(); i++) {
+			int[] out = m_keys.get(i).getOutput();
+			ByteBuffer b = ByteBuffer.allocate(12);
+			b.putInt(0, out[0]);
+			b.putInt(4, out[1]);
+			b.putInt(8, out[2]);
+			byte[] buf = b.array();
+			DatagramPacket packet = new DatagramPacket(buf, buf.length, m_address, m_port);
+			try {
+				m_socket.send(packet);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
     
     boolean handshake() throws IOException {
-    	byte[] buf = ByteBuffer.allocate(4).putInt(m_players.size()).array();
+    	byte[] buf = ByteBuffer.allocate(4).putInt(m_localPlayers).array();
     	byte[] acc = ByteBuffer.allocate(4).putInt(0).array();
 		DatagramPacket packet = new DatagramPacket(buf, buf.length, m_address, m_port);
 		DatagramPacket a = new DatagramPacket(acc, acc.length, m_address, m_port);
-    	for (int i = 0; i < m_players.size(); i++) {
-    		m_players.get(i).SetID(sendPacket(packet));
-    		if (m_players.get(i).GetID() == 0) 
+    	for (int i = 0; i < m_localPlayers; i++) {
+    		if (i < m_idList.size())
+    			m_idList.remove(i);
+    		m_idList.add(sendPacket(packet));
+    		
+    		if (m_idList.get(i) == 0)
     			return false;
     		if (i > 0)
-	    		if (m_players.get(i).GetID() == m_players.get(i-1).GetID())
-	    			i--;
+    			if (m_idList.get(i) == m_idList.get(i-1))
+    				i--;
     		m_socket.send(a);
     	}
     	return true;
@@ -77,5 +125,77 @@ public class Game {
 			}	
     	}
     	return 0;
+    }
+    
+    private boolean newFrame() {
+		double currentTime = System.currentTimeMillis();
+		double delta = currentTime - m_lastTime;
+		boolean rv = (delta > (1000/60));
+		if(rv) {
+		    m_lastTime += (1000/60);
+		    if(delta > 10 * (1000/60)) {
+			m_lastTime = currentTime;
+		    }
+		}
+		return rv;
+    }
+    
+    private void initPlayers() {
+    	Color c;
+	// Team 1
+	if (m_idList.contains(1))
+		c = Color.ORANGE;
+	else
+		c = Color.RED;
+	m_entities.add(new Player(new Vector2D(200, 100),
+			      new Vector2D(1.0, 0.0),
+			      Color.RED
+			      ));
+	
+	if (m_idList.contains(2))
+		c = Color.PINK;
+	else
+		c = Color.RED;
+	m_entities.add(new Player(new Vector2D(200, 758-100),
+			      new Vector2D(1.0, 0.0),
+			      Color.RED
+			      ));
+	
+	// Team 2
+	if (m_idList.contains(3))
+		c = Color.BLUE;
+	else
+		c = Color.GREEN;
+	m_entities.add(new Player(new Vector2D(1024-200, 100),
+			      new Vector2D(-1.0, 0.0),
+			      Color.GREEN
+			      ));
+	
+	if (m_idList.contains(4))
+		c = Color.GRAY;
+	else
+		c = Color.GREEN;
+	m_entities.add(new Player(new Vector2D(1024-200, 758-100),
+			      new Vector2D(-1.0, 0.0),
+			      Color.GREEN
+			      ));
+	
+	// Ball
+	m_entities.add(new Player(new Vector2D(512, 379), 
+				new Vector2D(0.0, 0.0),
+				Color.WHITE));
+    
+    for (int i = 0; i < m_localPlayers; i++) {
+    	KeyConfig k = null;
+    	if (i == 0)
+    		k = new KeyConfig(KeyEvent.VK_A, KeyEvent.VK_D, KeyEvent.VK_S, KeyEvent.VK_W);
+    	if (i == 1)
+    		k = new KeyConfig(KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_DOWN, KeyEvent.VK_UP);
+    	if (i == 2)
+    		k = new KeyConfig(KeyEvent.VK_J, KeyEvent.VK_L, KeyEvent.VK_K, KeyEvent.VK_I);
+    	if (i == 3)
+    		k = new KeyConfig(KeyEvent.VK_F, KeyEvent.VK_H, KeyEvent.VK_G, KeyEvent.VK_T);
+    	m_keys.add(new KeyClass(k,m_idList.get(i)));
+    }
     }
 }

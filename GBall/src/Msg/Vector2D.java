@@ -1,4 +1,4 @@
-package GBall;
+package Msg;
 
 import java.io.Serializable;
 

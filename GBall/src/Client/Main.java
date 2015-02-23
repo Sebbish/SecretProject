@@ -18,10 +18,10 @@ public class Main {
 		String hostName = args[0];
 		int port = Integer.parseInt(args[1]);
 		int localPlayers = Integer.parseInt(args[2]);
-		ArrayList<Player> players = new ArrayList<Player>();
-		for (int i = 0; i < localPlayers && i < 4; i++) {
+		//ArrayList<Player> players = new ArrayList<Player>();
+		/*for (int i = 0; i < localPlayers && i < 4; i++) {
 			players.add(new Player());
-		}
+		}*/
 		InetAddress address = null;
 		try {
 			address = InetAddress.getByName(hostName);
@@ -30,6 +30,6 @@ public class Main {
 		}
 		DatagramSocket socket = new DatagramSocket();
 		socket.connect(address, 25000);
-		Game.getInstance().process(socket, address, port, players);
+		Game.getInstance().process(socket, address, port, localPlayers);
 	}
 }
