@@ -14,6 +14,7 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 
 import Msg.MsgData;
+import Msg.Vector2D;
 
 public class EntityManager {
 	private static LinkedList<GameEntity> m_entities = new LinkedList<GameEntity>();
@@ -37,6 +38,12 @@ public class EntityManager {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		try {
+			m_socket.setSoTimeout(200);
+		} catch (SocketException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public void addShip(final Vector2D position, final Vector2D speed, final Vector2D direction, final Color color, final KeyConfig kc) {
@@ -50,6 +57,7 @@ public class EntityManager {
 	/////////////////////
 	public void allConnected() throws IOException {
 		int id = 0;
+		while(id < 4){
 		byte[] b = new byte[16];
 		DatagramPacket packet = new DatagramPacket(b, b.length);
 		try {
@@ -67,22 +75,25 @@ public class EntityManager {
 				byte[] in = new byte[128];
 				out = ByteBuffer.allocate(4).putInt(id+1).array();
 				DatagramPacket send = new DatagramPacket(out, out.length, packet.getAddress(), packet.getPort());
-				m_socket.send(send);
 				DatagramPacket get = new DatagramPacket(in, in.length);
 				int msg1 = -1;
-				while (msg1 != 0) {
+				int failTimer = 0;
+				while (msg1 != 0 && failTimer < 5) {
+					m_socket.send(send);
 					m_socket.receive(get);
-					msg1 = ByteBuffer.wrap(in, 0, packet.getLength()).getInt();
+					msg1 = ByteBuffer.wrap(get.getData(), 0, packet.getLength()).getInt();
 					if (msg1 == 0 && id < 4)
 						id++;
+					else
+						failTimer++;
 				}
 			}
-			System.out.println("a");
 		} else {
 			byte[] out = new byte[4];
 			out = ByteBuffer.allocate(4).putInt(0).array();
 			DatagramPacket send = new DatagramPacket(out, out.length, packet.getAddress(), packet.getPort());
 			m_socket.send(send);
+		}
 		}
 		m_socket.setSoTimeout(1);
 		/*
@@ -103,7 +114,7 @@ public class EntityManager {
 	}
 
 	public void updateinput() {
-		byte[] b = new byte[2];
+		byte[] b = new byte[8];
 		DatagramPacket packet = new DatagramPacket(b, b.length);
 
 		try {
@@ -112,10 +123,10 @@ public class EntityManager {
 			// TODO Auto-generated catch block
 			//e.printStackTrace();
 		}
-		int id = packet.getData()[0];
-		int msg = packet.getData()[1];
-		if (id >= 0 && id <= 4) {
-			if (m_entities.get(id).isUsedByPlayer())
+		int id = ByteBuffer.wrap(packet.getData(), 0, packet.getLength()).getInt();
+		int msg = ByteBuffer.wrap(packet.getData(), 4, packet.getLength()).getInt();
+		if (id >= 0 && id <= 3) {
+			if (m_entities.get(id).isUsedByPlayer() && m_entities.get(id).getAddress() == packet.getAddress())
 				m_entities.get(id).setInput(msg);
 			else
 				m_entities.get(id).connect(packet.getAddress(), packet.getPort());

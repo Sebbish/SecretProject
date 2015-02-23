@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.event.*;
 import java.net.InetAddress;
 
+import Msg.Vector2D;
+
 public class Ship extends GameEntity {
 
     private Color m_color;

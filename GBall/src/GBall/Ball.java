@@ -3,6 +3,8 @@ package GBall;
 import java.awt.Color;
 import java.awt.Graphics;
 
+import Msg.Vector2D;
+
 public class Ball extends GameEntity {
     private Color m_color;
 

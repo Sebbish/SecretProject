@@ -3,6 +3,8 @@ package GBall;
 import java.awt.Color;
 import java.awt.Font;
 
+import Msg.Vector2D;
+
 public final class Const {
     // World-related constants
     final static double		TARGET_FPS = 53;

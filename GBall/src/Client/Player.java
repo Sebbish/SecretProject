@@ -2,7 +2,7 @@ package Client;
 
 import java.awt.Color;
 
-import GBall.Vector2D;
+import Msg.Vector2D;
 
 public class Player {
 	
