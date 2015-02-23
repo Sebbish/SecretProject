@@ -8,6 +8,10 @@ import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
+import GBall.Const;
+import GBall.EntityManager;
+import GBall.GameWindow;
+
 public class Game {
 	private static class GameSingletonHolder { 
         public static final Game instance = new Game();
@@ -21,6 +25,8 @@ public class Game {
     InetAddress m_address = null;
     int m_port;
     ArrayList<Player> m_players;
+    
+    private final GameWindow m_gameWindow = new GameWindow();
 
     public void process(DatagramSocket socket, InetAddress address, int port, ArrayList<Player> players) throws IOException {
     	m_port = port;
@@ -29,6 +35,17 @@ public class Game {
     	m_players = players;
     	m_socket.setSoTimeout(200);
     	handshake();
+    	
+    	while(true) {
+    		EntityManager.getInstance().updateinput();
+    	    if(newFrame()) {
+    		EntityManager.getInstance().updatePositions();
+    		EntityManager.getInstance().checkBorderCollisions(Const.DISPLAY_WIDTH, Const.DISPLAY_HEIGHT);
+    		EntityManager.getInstance().checkShipCollisions();
+    		m_gameWindow.repaint();
+    		EntityManager.getInstance().broadcastPosition();
+    	    }
+    	}
     }
     
     boolean handshake() throws IOException {
