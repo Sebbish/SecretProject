@@ -46,5 +46,31 @@ public class MsgData implements Serializable {
     	m_P3rotation = P3rotation;
     	m_P4rotation = P4rotation;
     }
+    
+    public Vector2D getPosition(int id){
+    		if(id == 1)
+    			return m_P1position;
+    		if(id == 2)
+    			return m_P2position;
+    		if(id == 3)
+    			return m_P3position;
+    		if(id == 4)
+    			return m_P4position;
+    		if(id == 5)
+    			return m_BallPosition;
+    		return null;
+    }
+    
+    public Vector2D getRotation(int id){
+		if(id == 1)
+			return m_P1rotation;
+		if(id == 2)
+			return m_P2rotation;
+		if(id == 3)
+			return m_P3rotation;
+		if(id == 4)
+			return m_P4rotation;
+		return null;
+}
 
 }

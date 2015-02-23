@@ -40,7 +40,7 @@ public abstract class GameEntity implements Serializable{
     	return false;
     }
     
-    public void setInput(int input){ }
+    public void setInput(int acc, int dir){ }
     
     public InetAddress getAddress(){
     	return null;

@@ -27,13 +27,14 @@ public class World {
     private double m_lastTime = System.currentTimeMillis();
     private double m_actualFps = 0.0;
 
-    private final GameWindow m_gameWindow = new GameWindow();
+    //private final GameWindow m_gameWindow = new GameWindow();
 
     private World() {
 	
     }
 
     public void process() throws IOException {
+    	System.out.println("running...");
 	initPlayers();
 	
 	// Marshal the state    
@@ -65,7 +66,7 @@ public class World {
 		EntityManager.getInstance().updatePositions();
 		EntityManager.getInstance().checkBorderCollisions(Const.DISPLAY_WIDTH, Const.DISPLAY_HEIGHT);
 		EntityManager.getInstance().checkShipCollisions();
-		m_gameWindow.repaint();
+		//m_gameWindow.repaint();
 		EntityManager.getInstance().broadcastPosition();
 	    }
 	}
@@ -126,7 +127,7 @@ public class World {
 	}
 	
     public void addKeyListener(KeyListener k) {
-    	m_gameWindow.addKeyListener(k);
+    	//m_gameWindow.addKeyListener(k);
     }
 
 }

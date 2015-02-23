@@ -37,8 +37,13 @@ public class Ship extends GameEntity {
     	return false;
     }
     @Override
-    public void setInput(int input){ 
-    	
+    public void setInput(int acc, int dir){ 
+    	if(dir == -1 || dir == 1)
+    		rotation = dir;
+    	if(acc == 1)
+    		setAcceleration(Const.SHIP_MAX_ACCELERATION);
+    	else if(acc == -1)
+    		braking = true;
     }
     @Override
     public InetAddress getAddress(){
@@ -53,7 +58,7 @@ public class Ship extends GameEntity {
 	super(position, speed, direction, Const.SHIP_MAX_ACCELERATION, Const.SHIP_MAX_SPEED, Const.SHIP_FRICTION);
 	m_color = col;
     }
-
+    
    /* @Override
     public void keyPressed(KeyEvent e) {
 	try {
