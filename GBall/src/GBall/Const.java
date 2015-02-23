@@ -7,7 +7,7 @@ import Msg.Vector2D;
 
 public final class Const {
     // World-related constants
-    final static double		TARGET_FPS = 53;
+    final static double		TARGET_FPS = 60;
     final static double		FRAME_INCREMENT = 1000 / TARGET_FPS;
     final static String		APP_NAME = "Geometry Ball Tournament 2014";
     final static int            DISPLAY_WIDTH = 1024;
@@ -26,8 +26,8 @@ public final class Const {
     final static Vector2D	TEAM2_SCORE_TEXT_POSITION = new Vector2D((double) (DISPLAY_WIDTH / 2) + 120, 52.0);
     final static Font           SCORE_FONT = new Font("Times New Roman", Font.BOLD, FONT_SIZE);
 
-    final static Color	        TEAM1_COLOR = Color.RED;
-    final static Color	        TEAM2_COLOR = Color.GREEN;
+    final static Color	        TEAM1_COLOR = Color.PINK;
+    final static Color	        TEAM2_COLOR = Color.GRAY;
     
     final static double		START_TEAM1_SHIP1_X = 200.0;
     final static double		START_TEAM1_SHIP1_Y = 100.0;

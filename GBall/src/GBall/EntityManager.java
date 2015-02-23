@@ -2,8 +2,10 @@ package GBall;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -114,7 +116,7 @@ public class EntityManager {
 	}
 
 	public void updateinput() {
-		byte[] b = new byte[8];
+		byte[] b = new byte[12];
 		DatagramPacket packet = new DatagramPacket(b, b.length);
 
 		try {
@@ -123,11 +125,13 @@ public class EntityManager {
 			// TODO Auto-generated catch block
 			//e.printStackTrace();
 		}
-		int id = ByteBuffer.wrap(packet.getData(), 0, packet.getLength()).getInt();
-		int msg = ByteBuffer.wrap(packet.getData(), 4, packet.getLength()).getInt();
+		int id = ByteBuffer.wrap(packet.getData(), 0, 4).getInt();
+		int acc = ByteBuffer.wrap(packet.getData(), 4, 4).getInt();
+		int dir = ByteBuffer.wrap(packet.getData(), 8, 4).getInt();
+		System.out.println("ID: " + id + ", ACC: " + acc + ", DIR: " + dir);
 		if (id >= 0 && id <= 3) {
 			if (m_entities.get(id).isUsedByPlayer() && m_entities.get(id).getAddress() == packet.getAddress())
-				m_entities.get(id).setInput(msg);
+				m_entities.get(id).setInput(acc, dir);
 			else
 				m_entities.get(id).connect(packet.getAddress(), packet.getPort());
 		}
@@ -141,7 +145,7 @@ public class EntityManager {
 			ObjectOutputStream oos = new ObjectOutputStream(baos);
 			oos.writeObject(new MsgData());
 			oos.flush();
-			byte[] buf = new byte[1024];
+			byte[] buf = new byte[256];
 			buf = baos.toByteArray();
 			for (int i = 0; i < 4; i++) {
 				if (m_entities.get(i).getAddress() != null) {
@@ -149,7 +153,6 @@ public class EntityManager {
 					m_socket.send(pack);
 				}
 			}
-			oos = new ObjectOutputStream(baos);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
