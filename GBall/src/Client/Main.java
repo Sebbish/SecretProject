@@ -13,7 +13,7 @@ public class Main {
 	
 	//private static DatagramSocket socket;
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, ClassNotFoundException {
 		// TODO Auto-generated method stub
 		String hostName = args[0];
 		int port = Integer.parseInt(args[1]);
