@@ -18,9 +18,14 @@ public class Entities {
 		players = p;
 	}
 	
+	public ArrayList<Player> getEntities(){
+		return players;
+	}
+	
 	public void renderAll(Graphics g) {
 		for (int i = 0; i < players.size(); i++) {
 			players.get(i).render(g);
 		}
 	}
+
 }

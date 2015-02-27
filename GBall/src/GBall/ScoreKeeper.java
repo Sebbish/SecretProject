@@ -1,6 +1,7 @@
 package GBall;
 
 import java.awt.Graphics;
+import Msg.Vector2D;
 
 public class ScoreKeeper {
     private static class ScoreKeeperSingletonHolder { 
@@ -22,6 +23,10 @@ public class ScoreKeeper {
     private ScoreKeeper() {
 		m_team1Score = 0;
 		m_team2Score = 0;
+    }
+    
+    public Vector2D getScoreAsVector(){
+    	return new Vector2D(m_team1Score,m_team2Score);
     }
 
     public void render(java.awt.Graphics g) {

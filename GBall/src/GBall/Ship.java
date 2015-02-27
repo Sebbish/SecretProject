@@ -38,12 +38,14 @@ public class Ship extends GameEntity {
     }
     @Override
     public void setInput(int acc, int dir){ 
-    	if(dir == -1 || dir == 1)
+    	if(dir >= -1 || dir <= 1)
     		rotation = dir;
     	if(acc == 1)
     		setAcceleration(Const.SHIP_MAX_ACCELERATION);
     	else if(acc == -1)
     		braking = true;
+    	else
+    		setAcceleration(0);
     }
     @Override
     public InetAddress getAddress(){

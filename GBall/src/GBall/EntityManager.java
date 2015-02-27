@@ -129,29 +129,26 @@ public class EntityManager {
 		int id = ByteBuffer.wrap(packet.getData(), 0, 4).getInt();
 		int acc = ByteBuffer.wrap(packet.getData(), 4, 4).getInt();
 		int dir = ByteBuffer.wrap(packet.getData(), 8, 4).getInt();
-		System.out.println("ID: " + id + ", ACC: " + acc + ", DIR: " + dir);
-		if (id >= 0 && id <= 3) {
-			if (m_entities.get(id).isUsedByPlayer() && m_entities.get(id).getAddress() == packet.getAddress())
-				m_entities.get(id).setInput(acc, dir);
-			else
-				m_entities.get(id).connect(packet.getAddress(), packet.getPort());
+		if(id == 4)
+			System.out.println("ID: " + id + ", ACC: " + acc + ", DIR: " + dir);
+		if (id >= 1 && id <= 4) {
+			if (m_entities.get(id-1).isUsedByPlayer() && m_entities.get(id-1).getAddress().getHostAddress().equals(packet.getAddress().getHostAddress()))
+				m_entities.get(id-1).setInput(acc, dir);
 		}
 	}
 
 	public void broadcastPosition() {
-		MsgData msg = new MsgData(m_entities.get(0).getPosition(), m_entities.get(1).getPosition(), m_entities.get(2).getPosition(), m_entities.get(3).getPosition(), m_entities.get(0).getDirection(), m_entities.get(1).getDirection(), m_entities.get(2).getDirection(), m_entities.get(3).getDirection(), m_entities.get(4).getPosition());
+		MsgData msg = new MsgData(m_entities.get(0).getPosition(), m_entities.get(1).getPosition(), m_entities.get(2).getPosition(), m_entities.get(3).getPosition(), m_entities.get(0).getDirection(), m_entities.get(1).getDirection(), m_entities.get(2).getDirection(), m_entities.get(3).getDirection(), m_entities.get(4).getPosition(),ScoreKeeper.getInstance().getScoreAsVector());
 
 		try {
-			ByteArrayOutputStream baos = new ByteArrayOutputStream(4096);
-			ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(baos));
-			oos.flush();
-			oos.writeObject(new MsgData());
-			oos.flush();
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			ObjectOutputStream oos = new ObjectOutputStream(baos);
+			oos.writeObject(msg);
 			byte[] buf = baos.toByteArray();
 			for (int i = 0; i < 4; i++) {
 				if (m_entities.get(i).getAddress() != null) {
 					DatagramPacket pack = new DatagramPacket(buf, buf.length, m_entities.get(i).getAddress(), m_entities.get(i).getPort());
-					System.out.println("sent " + buf.length + " bytes: " + buf[0] + "," + buf[1] + "," + buf[2] + "," + buf[3]);
+					//System.out.println("sent " + buf.length + " bytes: " + buf[0] + "," + buf[1] + "," + buf[2] + "," + buf[3]);
 					m_socket.send(pack);
 				}
 			}

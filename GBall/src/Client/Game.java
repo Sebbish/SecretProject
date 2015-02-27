@@ -74,13 +74,14 @@ public class Game {
 		}
 		//ByteArrayInputStream bs = new ByteArrayInputStream(packet.getData());
 		ByteArrayInputStream bs = new ByteArrayInputStream(buf);
-		ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(bs));
+		ObjectInputStream ois = new ObjectInputStream(bs);
 		MsgData data = (MsgData)ois.readObject();
-		ois.close();
-		for (int i = 0; i < m_entities.size(); i++) {
-			m_entities.get(i).setPosition(data.getPosition(i+1));
-			m_entities.get(i).setRotation(data.getRotation(i+1));
+		for (int i = 0; i < Entities.getInstance().getEntities().size(); i++) {
+			Entities.getInstance().getEntities().get(i).setPosition(data.getPosition(i+1));
+			Entities.getInstance().getEntities().get(i).setRotation(data.getRotation(i+1));
 		}
+		ScoreKeeperClient.getInstance().changeScores((int)data.getScore().getX(), (int)data.getScore().getY());
+		ois.close();
 	}
 	
 	void sendOutput() {
@@ -203,7 +204,6 @@ public class Game {
 				Color.WHITE));
 	
 	Entities.getInstance().setEntities(m_entities);
-    
     for (int i = 0; i < m_localPlayers; i++) {
     	KeyConfig k = null;
     	if (i == 0)
