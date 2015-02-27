@@ -2,6 +2,8 @@ package Client;
 
 import java.awt.Color;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -14,7 +16,6 @@ import java.util.ArrayList;
 
 import GBall.Const;
 import GBall.EntityManager;
-import GBall.GameWindow;
 import GBall.KeyConfig;
 import Msg.MsgData;
 import Msg.Vector2D;
@@ -60,16 +61,22 @@ public class Game {
     }
 
 	void getUpdate() throws IOException, ClassNotFoundException {
-		byte[] buf = new byte[256];
+		//byte[] buf = new byte[256];
+		byte[] buf = new byte[4096];
 		DatagramPacket packet = new DatagramPacket(buf, buf.length);
 		try {
+			//System.out.println("Getting update:");
 			m_socket.receive(packet);
+			//System.out.println("received " + packet.getLength() + " bytes: " + buf[packet.getOffset()+0] + "," + buf[packet.getOffset()+1] + "," + buf[packet.getOffset()+2] + "," + buf[packet.getOffset()+3]);
 		} catch (IOException e) {
 			e.printStackTrace();
+			System.out.println("Timed out");
 		}
-		ByteArrayInputStream bs = new ByteArrayInputStream(packet.getData());
-		ObjectInputStream ois = new ObjectInputStream(bs);
+		//ByteArrayInputStream bs = new ByteArrayInputStream(packet.getData());
+		ByteArrayInputStream bs = new ByteArrayInputStream(buf);
+		ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(bs));
 		MsgData data = (MsgData)ois.readObject();
+		ois.close();
 		for (int i = 0; i < m_entities.size(); i++) {
 			m_entities.get(i).setPosition(data.getPosition(i+1));
 			m_entities.get(i).setRotation(data.getRotation(i+1));
@@ -79,6 +86,7 @@ public class Game {
 	void sendOutput() {
 		for (int i = 0; i < m_keys.size(); i++) {
 			int[] out = m_keys.get(i).getOutput();
+			System.out.println("Output: ID: " + (out[0]) + ", Acc: " + out[1] + ", Dir: " + out[2]);
 			ByteBuffer b = ByteBuffer.allocate(12);
 			b.putInt(0, out[0]);
 			b.putInt(4, out[1]);
@@ -99,36 +107,37 @@ public class Game {
     	byte[] acc = ByteBuffer.allocate(4).putInt(0).array();
 		DatagramPacket packet = new DatagramPacket(buf, buf.length, m_address, m_port);
 		DatagramPacket a = new DatagramPacket(acc, acc.length, m_address, m_port);
+		m_socket.send(packet);
     	for (int i = 0; i < m_localPlayers; i++) {
-    		if (i < m_idList.size())
-    			m_idList.remove(i);
-    		m_idList.add(sendPacket(packet));
+    		m_idList.add(receiveID(packet));
     		
     		if (m_idList.get(i) == 0) {
     			System.out.println("received a zero");
     			return false;
     		}
+    		System.out.println("Received ID: " + m_idList.get(i));
     		if (i > 0)
     			if (m_idList.get(i) == m_idList.get(i-1)) {
     				System.out.println("received the same ID");
+    				m_idList.remove(i);
     				i--;
     			}
     		m_socket.send(a);
     		
-    		System.out.println("Received ID: " + m_idList.get(i));
+    		
     	}
     	return true;
     }
     
-    int sendPacket(DatagramPacket packet) throws IOException {
+    int receiveID(DatagramPacket packet) throws IOException {
     	int retries = 0;
     	while (retries < 5) {
-			m_socket.send(packet);
 	    	try {
 				m_socket.receive(packet);
 				return ByteBuffer.wrap(packet.getData()).getInt();
 			} catch (IOException e) { //Timeout
 				retries++;
+				m_socket.send(packet);
 			}	
     	}
     	System.out.println("Timeout");
@@ -192,6 +201,8 @@ public class Game {
 	m_entities.add(new Player(new Vector2D(512, 379), 
 				new Vector2D(0.0, 0.0),
 				Color.WHITE));
+	
+	Entities.getInstance().setEntities(m_entities);
     
     for (int i = 0; i < m_localPlayers; i++) {
     	KeyConfig k = null;
@@ -204,6 +215,7 @@ public class Game {
     	if (i == 3)
     		k = new KeyConfig(KeyEvent.VK_F, KeyEvent.VK_H, KeyEvent.VK_G, KeyEvent.VK_T);
     	m_keys.add(new KeyClass(k,m_idList.get(i)));
+    	m_gameWindow.addKeyListener(m_keys.get(i));
     }
     }
 }

@@ -1,11 +1,12 @@
 package Client;
 
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 import GBall.Const;
 import GBall.KeyConfig;
 
-public class KeyClass {
+public class KeyClass implements KeyListener{
 	private KeyConfig keyConfig;
 	private int acceleration = 0;
 	private int turning = 0;
@@ -21,7 +22,9 @@ public class KeyClass {
 		return i;
 	}
 	
+	@Override
 	public void keyPressed(KeyEvent e) {
+		System.out.println("A key was pressed");
     	try {
     	    if(e.getKeyCode() == keyConfig.rightKey()) {
     		turning = 1;
@@ -36,24 +39,26 @@ public class KeyClass {
     		acceleration = -1;
     	    }
     	} catch(Exception x) {System.err.println(x);}
-        }
-
-        public void keyReleased(KeyEvent e) {
-        	
-            try {
-    	    if(e.getKeyCode() == keyConfig.rightKey()) {
-    		turning = 0;
-    	    }
-    	    else if(e.getKeyCode() == keyConfig.leftKey()) {
-    		turning = 0;
-    	    }
-    	    else if(e.getKeyCode() == keyConfig.accelerateKey()) {
-    		acceleration = 0;
-    	    }
-    	    else if(e.getKeyCode() == keyConfig.brakeKey()) {
-    		acceleration = 0;
-    	    }
-    	} catch(Exception x) {System.out.println(x);}
-        }
-        public void keyTyped(KeyEvent e) {} 
+    }
+	
+	@Override
+    public void keyReleased(KeyEvent e) {
+    	
+        try {
+	    if(e.getKeyCode() == keyConfig.rightKey()) {
+		turning = 0;
+	    }
+	    else if(e.getKeyCode() == keyConfig.leftKey()) {
+		turning = 0;
+	    }
+	    else if(e.getKeyCode() == keyConfig.accelerateKey()) {
+		acceleration = 0;
+	    }
+	    else if(e.getKeyCode() == keyConfig.brakeKey()) {
+		acceleration = 0;
+	    }
+	} catch(Exception x) {System.out.println(x);}
+    }
+	@Override
+    public void keyTyped(KeyEvent e) {} 
 }

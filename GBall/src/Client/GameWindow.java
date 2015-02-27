@@ -1,7 +1,12 @@
-package GBall;
+package Client;
 
 import java.awt.*;
 import java.awt.event.*;
+
+import Client.Const;
+import GBall.EntityManager;
+import GBall.ScoreKeeper;
+import GBall.World;
 
 public class GameWindow extends Frame implements WindowListener {
     
@@ -26,14 +31,14 @@ public class GameWindow extends Frame implements WindowListener {
 
     @Override
     public void update(Graphics g) {
+    	System.out.println("Gamewindow update()");
         if (offScreenGraphicsCtx == null) {
             offScreenImage = createImage(getSize().width, getSize().height);
             offScreenGraphicsCtx = offScreenImage.getGraphics();
         }
-
 	offScreenGraphicsCtx.setColor(Const.BG_COLOR);
 	offScreenGraphicsCtx.fillRect(0,0,getSize().width,getSize().height);	
-	EntityManager.getInstance().renderAll(offScreenGraphicsCtx);
+	Entities.getInstance().renderAll(offScreenGraphicsCtx);
 	ScoreKeeper.getInstance().render(offScreenGraphicsCtx);
 
 	if(Const.SHOW_FPS) {

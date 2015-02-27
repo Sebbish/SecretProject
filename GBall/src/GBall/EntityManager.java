@@ -2,6 +2,7 @@ package GBall;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -141,18 +142,20 @@ public class EntityManager {
 		MsgData msg = new MsgData(m_entities.get(0).getPosition(), m_entities.get(1).getPosition(), m_entities.get(2).getPosition(), m_entities.get(3).getPosition(), m_entities.get(0).getDirection(), m_entities.get(1).getDirection(), m_entities.get(2).getDirection(), m_entities.get(3).getDirection(), m_entities.get(4).getPosition());
 
 		try {
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			ObjectOutputStream oos = new ObjectOutputStream(baos);
+			ByteArrayOutputStream baos = new ByteArrayOutputStream(4096);
+			ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(baos));
+			oos.flush();
 			oos.writeObject(new MsgData());
 			oos.flush();
-			byte[] buf = new byte[256];
-			buf = baos.toByteArray();
+			byte[] buf = baos.toByteArray();
 			for (int i = 0; i < 4; i++) {
 				if (m_entities.get(i).getAddress() != null) {
 					DatagramPacket pack = new DatagramPacket(buf, buf.length, m_entities.get(i).getAddress(), m_entities.get(i).getPort());
+					System.out.println("sent " + buf.length + " bytes: " + buf[0] + "," + buf[1] + "," + buf[2] + "," + buf[3]);
 					m_socket.send(pack);
 				}
 			}
+			oos.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
