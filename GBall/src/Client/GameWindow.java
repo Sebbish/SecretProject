@@ -42,7 +42,7 @@ public class GameWindow extends Frame implements WindowListener {
 	ScoreKeeperClient.getInstance().render(offScreenGraphicsCtx);
 
 	if(Const.SHOW_FPS) {
-	    offScreenGraphicsCtx.drawString("FPS: " + (int) World.getInstance().getActualFps(), 10, 50);
+	    offScreenGraphicsCtx.drawString("FPS: " + (int) Game.getInstance().getActualFps(), 10, 50);
 	}
 
 
