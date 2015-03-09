@@ -2,6 +2,7 @@ package Client;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.Rectangle2D;
 
 import Client.Const;
 import GBall.EntityManager;
@@ -54,6 +55,15 @@ public class GameWindow extends Frame implements WindowListener {
 	
     @Override
     public void paint(Graphics g) {
+    	g.setFont(new Font("TimesRoman", Font.PLAIN, 35)); 
+    	Graphics2D g2d = (Graphics2D) g;
+        FontMetrics fm = g2d.getFontMetrics();
+        Rectangle2D r = fm.getStringBounds("Waiting for other players", g2d);
+    	g.setColor(Color.BLACK);
+    	g.fillRect(0, 0, super.getWidth(), super.getHeight());
+    	g.setColor(Color.WHITE);
+    
+    	g.drawString("Waiting for other players", (this.getWidth() - (int) r.getWidth()) / 2, (this.getHeight() - (int) r.getHeight()) / 2 + fm.getAscent());
     }
     
     @Override

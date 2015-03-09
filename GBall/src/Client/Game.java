@@ -48,10 +48,11 @@ public class Game {
 		m_address = address;
 		m_socket = socket;
 		m_localPlayers = players;
-		m_socket.setSoTimeout(200);
 		handshake();
 		initPlayers();
-		
+		setScreen();
+		getUpdate();
+		m_socket.setSoTimeout(2000);
 		double startOfFrameTimer;
 
 		while (true) {
@@ -62,6 +63,12 @@ public class Game {
 				sendOutput();
 			m_actualFps = 1000000000.0 / (System.nanoTime() - startOfFrameTimer);
 		}
+	}
+	
+	void setScreen(){
+		m_gameWindow.getGraphics().setColor(Color.BLACK);
+		m_gameWindow.getGraphics().fillRect(0, 0, m_gameWindow.getWidth(), m_gameWindow.getHeight());
+		m_gameWindow.paint(m_gameWindow.getGraphics());
 	}
 
 	void getUpdate() throws IOException, ClassNotFoundException {
@@ -130,6 +137,7 @@ public class Game {
 			m_socket.send(a);
 
 		}
+		System.out.println(m_idList.size());
 		return true;
 	}
 

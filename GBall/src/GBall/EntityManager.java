@@ -10,9 +10,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
@@ -20,6 +22,17 @@ import Msg.MsgData;
 import Msg.Vector2D;
 
 public class EntityManager {
+	//////////////
+	class connection{
+		public final InetAddress m_address;
+		public final int m_port;
+		public connection(InetAddress address, int port){
+			m_address = address;
+			m_port = port;
+		}
+	};
+	private static ArrayList<connection> m_connection = new ArrayList<connection>();
+	///////////
 	private static LinkedList<GameEntity> m_entities = new LinkedList<GameEntity>();
 
 	DatagramSocket m_socket;
@@ -69,6 +82,18 @@ public class EntityManager {
 			// TODO Auto-generated catch block
 			//e.printStackTrace();
 		}
+		if(m_connection.size() == 0){
+			m_connection.add(new connection(packet.getAddress(),packet.getPort()));
+		}else{
+			for(int i = 0; i < m_connection.size();i++){
+				if(!(m_connection.get(i).m_address == packet.getAddress() && m_connection.get(i).m_port == packet.getPort())){
+					m_connection.add(new connection(packet.getAddress(),packet.getPort()));
+					break;
+				}
+			}
+		}
+		
+		
 		int msg = ByteBuffer.wrap(b, 0, packet.getLength()).getInt();
 		msg = id + msg;
 		if (msg - 1 < MAXPLAYERS) {
@@ -145,12 +170,10 @@ public class EntityManager {
 			ObjectOutputStream oos = new ObjectOutputStream(baos);
 			oos.writeObject(msg);
 			byte[] buf = baos.toByteArray();
-			for (int i = 0; i < 4; i++) {
-				if (m_entities.get(i).getAddress() != null) {
-					DatagramPacket pack = new DatagramPacket(buf, buf.length, m_entities.get(i).getAddress(), m_entities.get(i).getPort());
+			for (int i = 0; i < m_connection.size(); i++) {
+					DatagramPacket pack = new DatagramPacket(buf, buf.length, m_connection.get(i).m_address, m_connection.get(i).m_port);
 					//System.out.println("sent " + buf.length + " bytes: " + buf[0] + "," + buf[1] + "," + buf[2] + "," + buf[3]);
 					m_socket.send(pack);
-				}
 			}
 			oos.close();
 		} catch (IOException e) {
