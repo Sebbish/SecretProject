@@ -48,19 +48,25 @@ public class Game {
 		m_address = address;
 		m_socket = socket;
 		m_localPlayers = players;
-		handshake();
+		m_socket.setSoTimeout(2000);
+		if(!handshake()){
+			System.exit(-1);
+		}
 		initPlayers();
 		setScreen();
+		m_socket.setSoTimeout(0);
 		getUpdate();
-		m_socket.setSoTimeout(2000);
+		m_socket.setSoTimeout(2);
+		
 		double startOfFrameTimer;
 
 		while (true) {
 			startOfFrameTimer = System.nanoTime();
 			getUpdate();
 			m_gameWindow.repaint();
-			if (newFrame()) 
+			if (newFrame()) {
 				sendOutput();
+			}
 			m_actualFps = 1000000000.0 / (System.nanoTime() - startOfFrameTimer);
 		}
 	}
@@ -80,8 +86,9 @@ public class Game {
 			m_socket.receive(packet);
 			//System.out.println("received " + packet.getLength() + " bytes: " + buf[packet.getOffset()+0] + "," + buf[packet.getOffset()+1] + "," + buf[packet.getOffset()+2] + "," + buf[packet.getOffset()+3]);
 		} catch (IOException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 			System.out.println("Timed out");
+			return;
 		}
 		//ByteArrayInputStream bs = new ByteArrayInputStream(packet.getData());
 		ByteArrayInputStream bs = new ByteArrayInputStream(buf);
@@ -176,26 +183,26 @@ public class Game {
 			c = Color.ORANGE;
 		else
 			c = Color.RED;
-		m_entities.add(new Player(new Vector2D(200, 100), new Vector2D(1.0, 0.0), Color.RED));
+		m_entities.add(new Player(new Vector2D(200, 100), new Vector2D(1.0, 0.0), c));
 
 		if (m_idList.contains(2))
 			c = Color.PINK;
 		else
 			c = Color.RED;
-		m_entities.add(new Player(new Vector2D(200, 758 - 100), new Vector2D(1.0, 0.0), Color.RED));
+		m_entities.add(new Player(new Vector2D(200, 758 - 100), new Vector2D(1.0, 0.0), c));
 
 		// Team 2
 		if (m_idList.contains(3))
 			c = Color.BLUE;
 		else
 			c = Color.GREEN;
-		m_entities.add(new Player(new Vector2D(1024 - 200, 100), new Vector2D(-1.0, 0.0), Color.GREEN));
+		m_entities.add(new Player(new Vector2D(1024 - 200, 100), new Vector2D(-1.0, 0.0), c));
 
 		if (m_idList.contains(4))
 			c = Color.GRAY;
 		else
 			c = Color.GREEN;
-		m_entities.add(new Player(new Vector2D(1024 - 200, 758 - 100), new Vector2D(-1.0, 0.0), Color.GREEN));
+		m_entities.add(new Player(new Vector2D(1024 - 200, 758 - 100), new Vector2D(-1.0, 0.0), c));
 
 		// Ball
 		m_entities.add(new Player(new Vector2D(512, 379), new Vector2D(0.0, 0.0), Color.WHITE));
