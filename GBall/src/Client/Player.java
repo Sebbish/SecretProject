@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.event.KeyEvent;
 
 import GBall.Const;
-import GBall.KeyConfig;
 import Msg.Vector2D;
 
 public class Player {

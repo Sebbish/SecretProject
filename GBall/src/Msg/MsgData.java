@@ -21,6 +21,8 @@ public class MsgData implements Serializable {
 	private Vector2D m_P4rotation;
 
 	private Vector2D m_score;
+	
+	//position samt rotation för varje object
 
 	public MsgData() {
 		m_P1position = new Vector2D();
@@ -50,7 +52,7 @@ public class MsgData implements Serializable {
 
 		m_score = score;
 	}
-
+	//hämta position
 	public Vector2D getPosition(int id) {
 		if (id == 1)
 			return m_P1position;
@@ -64,7 +66,7 @@ public class MsgData implements Serializable {
 			return m_BallPosition;
 		return null;
 	}
-
+	//hämta raotation
 	public Vector2D getRotation(int id) {
 		if (id == 1)
 			return m_P1rotation;

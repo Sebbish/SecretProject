@@ -16,10 +16,12 @@ public class Ship extends GameEntity {
     private InetAddress m_address;
     private int m_port;
     
+    //används av en spelare
     @Override
     public boolean isUsedByPlayer(){
     	return m_isUsedByPlayer;
     }
+    //information om vem som styr denna spelare sparas
     @Override
     public boolean connect(InetAddress address, int port){
     	if(!m_isUsedByPlayer){
@@ -30,12 +32,14 @@ public class Ship extends GameEntity {
     	}
     	return false;
     }
+    //jämför address och port
     @Override
     public boolean compareAddressAndPort(InetAddress address, int port){
-    	if(address == m_address && port == m_port)
+    	if(address.equals(m_address) && port == m_port)
     		return true;
     	return false;
     }
+    //ställer in input som skickats från klient
     @Override
     public void setInput(int acc, int dir){ 
     	if(dir >= -1 || dir <= 1)
@@ -60,48 +64,7 @@ public class Ship extends GameEntity {
 	super(position, speed, direction, Const.SHIP_MAX_ACCELERATION, Const.SHIP_MAX_SPEED, Const.SHIP_FRICTION);
 	m_color = col;
     }
-    
-   /* @Override
-    public void keyPressed(KeyEvent e) {
-	try {
-            if(e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-		System.exit(0);
-	    }
-	    else if(e.getKeyCode() == m_keyConfig.rightKey()) {
-		rotation = 1;
-	    }
-	    else if(e.getKeyCode() == m_keyConfig.leftKey()) {
-		rotation = -1;
-	    }
-	    else if(e.getKeyCode() == m_keyConfig.accelerateKey()) {
-		setAcceleration(Const.SHIP_MAX_ACCELERATION);
-	    }
-	    else if(e.getKeyCode() == m_keyConfig.brakeKey()) {
-		braking = true;
-	    }
-	} catch(Exception x) {System.err.println(x);}
-    }
-
-    public void keyReleased(KeyEvent e) {
-    	
-        try {
-	    if(e.getKeyCode() == m_keyConfig.rightKey() && rotation == 1) {
-		rotation = 0;
-	    }
-	    else if(e.getKeyCode() == m_keyConfig.leftKey() && rotation == -1) {
-		rotation = 0;
-	    }
-	    else if(e.getKeyCode() == m_keyConfig.accelerateKey()) {
-		setAcceleration(0);
-	    }
-	    else if(e.getKeyCode() == m_keyConfig.brakeKey()) {
-		braking = false;
-	    }
-	} catch(Exception x) {System.out.println(x);}
-    }
-    @Override
-    public void keyTyped(KeyEvent e) {} 
-*/
+  
     @Override
     public void move() {
 	if(rotation != 0) {

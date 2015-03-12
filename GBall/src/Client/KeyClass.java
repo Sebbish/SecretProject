@@ -4,7 +4,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 import GBall.Const;
-import GBall.KeyConfig;
 
 public class KeyClass implements KeyListener{
 	private KeyConfig keyConfig;

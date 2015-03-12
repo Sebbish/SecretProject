@@ -8,6 +8,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
+import Client.KeyConfig;
 import Msg.Vector2D;
 
 public class World {
@@ -66,7 +67,6 @@ public class World {
 		EntityManager.getInstance().updatePositions();
 		EntityManager.getInstance().checkBorderCollisions(Const.DISPLAY_WIDTH, Const.DISPLAY_HEIGHT);
 		EntityManager.getInstance().checkShipCollisions();
-		//m_gameWindow.repaint();
 		EntityManager.getInstance().broadcastPosition();
 	    }
 	}

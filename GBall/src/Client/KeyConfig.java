@@ -1,4 +1,4 @@
-package GBall;
+package Client;
 
 public class KeyConfig
 {

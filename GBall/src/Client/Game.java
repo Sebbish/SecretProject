@@ -2,21 +2,16 @@ package Client;
 
 import java.awt.Color;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
-import GBall.Const;
 import GBall.EntityManager;
-import GBall.KeyConfig;
 import Msg.MsgData;
 import Msg.Vector2D;
 
@@ -122,7 +117,10 @@ public class Game {
 
 	boolean handshake() throws IOException {
 		System.out.println("handshake");
-		byte[] buf = ByteBuffer.allocate(4).putInt(m_localPlayers).array();
+		ByteBuffer bytbuf = ByteBuffer.allocate(8);
+		bytbuf.putInt(0,m_localPlayers);
+		bytbuf.putInt(4,2000);
+		byte[] buf = bytbuf.array();
 		byte[] acc = ByteBuffer.allocate(4).putInt(0).array();
 		DatagramPacket packet = new DatagramPacket(buf, buf.length, m_address, m_port);
 		DatagramPacket a = new DatagramPacket(acc, acc.length, m_address, m_port);

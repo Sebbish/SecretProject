@@ -28,6 +28,7 @@ public abstract class GameEntity implements Serializable{
     public abstract boolean givesPoints();
     
     ///////////////////////////
+    //info i Ship.java
     public boolean isUsedByPlayer(){
     	return false;
     }
